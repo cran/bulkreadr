@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Ezekiel Ogundepo and Ernest Fokoué" />
+
+
+<title>Introduction to bulkreadr package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to bulkreadr package</h1>
+<h4 class="author">Ezekiel Ogundepo and Ernest Fokoué</h4>
+
+
+
+<div id="about-the-package" class="section level2">
+<h2>About the package</h2>
+<p><code>bulkreadr</code> is an R package designed to simplify and
+streamline the process of reading and processing large volumes of data.
+With a collection of functions tailored for bulk data operations, the
+package allows users to efficiently read multiple sheets from Microsoft
+Excel/Google Sheets workbooks and multiple CSV files from a directory.
+It returns the data as organized data frames, making it convenient for
+further analysis and manipulation. Whether dealing with extensive data
+sets or batch processing tasks, “bulkreadr” empowers users to
+effortlessly handle data in bulk, saving time and effort in data
+preparation workflows.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>You can install <code>bulkreadr</code> package from <a href="https://cran.r-project.org/">CRAN</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;bulkreadr&quot;</span>)</span></code></pre></div>
+<p>or the development version from <a href="https://github.com/gbganalyst/bulkreadr">GitHub</a> with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;devtools&quot;</span>)){</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a> <span class="fu">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>}</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;gbganalyst/bulkreadr&quot;</span>)</span></code></pre></div>
+</div>
+<div id="how-to-load-the-package" class="section level2">
+<h2>How to load the package</h2>
+<p>Now that you have installed <code>bulkreadr</code> package, you can
+simply load it by using:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(bulkreadr)</span></code></pre></div>
+</div>
+<div id="functions-in-bulkreadr-package" class="section level2">
+<h2>Functions in bulkreadr package</h2>
+<p>This section provides a concise overview of the different functions
+available in the <code>bulkreadr</code> package. These functions serve
+various purposes and are designed to handle importing of data in
+bulk.</p>
+<ul>
+<li><p><a href="#read_excel_workbook"><code>read_excel_workbook()</code></a></p></li>
+<li><p><a href="#read_csv_files_from_dir"><code>read_excel_files_from_dir()</code></a></p></li>
+<li><p><a href="#read_csv_files_from_dir"><code>read_csv_files_from_dir()</code></a></p></li>
+<li><p><a href="#read_gsheets"><code>read_gsheets()</code></a></p></li>
+<li><p><a href="#read_spss_data"><code>read_spss_data()</code></a></p></li>
+</ul>
+</div>
+<div id="other-functions-in-bulkreadr-package" class="section level2">
+<h2>Other functions in bulkreadr package:</h2>
+<ul>
+<li><p><a href="#pull_out"><code>pull_out()</code></a></p></li>
+<li><p><a href="#convert_to_date"><code>convert_to_date()</code></a></p></li>
+<li><p><a href="#inspect_na"><code>inspect_na()</code></a></p></li>
+<li><p><a href="#fill_missing_values"><code>fill_missing_values()</code></a></p></li>
+</ul>
+<p><strong>Note:</strong></p>
+<p>For the majority of functions within this package, we will utilize
+data stored in the system file by the <code>bulkreadr</code>, which can
+be accessed using the <code>system.file()</code> function. If you wish
+to utilize your own data stored in your local directory, please ensure
+that you have set the appropriate file path prior to using any functions
+provided by the bulkreadr package.</p>
+</div>
+<div id="read_excel_workbook" class="section level2">
+<h2>read_excel_workbook()</h2>
+<p><code>read_excel_workbook()</code> reads all the data from the sheets
+of an Excel workbook and return an appended dataframe.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># path to the xls/xlsx file.</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;Diamonds.xlsx&quot;</span>, <span class="at">package =</span> <span class="st">&quot;bulkreadr&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># read the sheets</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">read_excel_workbook</span>(<span class="at">path =</span> path)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 260 × 9</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   carat color clarity depth table price     x     y     z</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 1  2    I     SI1      65.9    60 13764  7.8   7.73  5.12</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 2  0.7  H     SI1      65.2    58  2048  5.49  5.55  3.6 </span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 3  1.51 E     SI1      58.4    70 11102  7.55  7.39  4.36</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 4  0.7  D     SI2      65.5    57  1806  5.56  5.43  3.6 </span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 5  0.35 F     VVS1     54.6    59  1011  4.85  4.79  2.63</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 255 more rows</span></span></code></pre></div>
+</div>
+<div id="read_excel_files_from_dir" class="section level2">
+<h2>read_excel_files_from_dir()</h2>
+<p><code>read_excel_files_from_dir()</code> reads all Excel workbooks in
+the <code>&quot;~/data&quot;</code> directory and returns an appended
+dataframe.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># path to the directory containing the xls/xlsx files.</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>directory <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;xlsxfolder&quot;</span>,  <span class="at">package =</span> <span class="st">&quot;bulkreadr&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># import the workbooks</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="fu">read_excel_files_from_dir</span>(<span class="at">dir_path =</span> directory)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 260 × 10</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;   cut   carat color clarity depth table price     x     y     z</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; 1 Fair   2    I     SI1      65.9    60 13764  7.8   7.73  5.12</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; 2 Fair   0.7  H     SI1      65.2    58  2048  5.49  5.55  3.6 </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 3 Fair   1.51 E     SI1      58.4    70 11102  7.55  7.39  4.36</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 4 Fair   0.7  D     SI2      65.5    57  1806  5.56  5.43  3.6 </span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 5 Fair   0.35 F     VVS1     54.6    59  1011  4.85  4.79  2.63</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 255 more rows</span></span></code></pre></div>
+</div>
+<div id="read_csv_files_from_dir" class="section level2">
+<h2>read_csv_files_from_dir()</h2>
+<p><code>read_csv_files_from_dir()</code> reads all csv files from the
+<code>&quot;~/data&quot;</code> directory and returns an appended dataframe. The
+resulting dataframe will be in the same order as the CSV files in the
+directory.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># path to the directory containing the CSV files.</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>directory <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;csvfolder&quot;</span>,  <span class="at">package =</span> <span class="st">&quot;bulkreadr&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># import the csv files</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">read_csv_files_from_dir</span>(<span class="at">dir_path =</span> directory)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; # A tibble: 260 × 10</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   cut   carat color clarity depth table price     x     y     z</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1 Fair   2    I     SI1      65.9    60 13764  7.8   7.73  5.12</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 2 Fair   0.7  H     SI1      65.2    58  2048  5.49  5.55  3.6 </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; 3 Fair   1.51 E     SI1      58.4    70 11102  7.55  7.39  4.36</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; 4 Fair   0.7  D     SI2      65.5    57  1806  5.56  5.43  3.6 </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; 5 Fair   0.35 F     VVS1     54.6    59  1011  4.85  4.79  2.63</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 255 more rows</span></span></code></pre></div>
+</div>
+<div id="read_gsheets" class="section level2">
+<h2>read_gsheets()</h2>
+<p>The <code>read_gsheets()</code> function imports data from multiple
+sheets in a Google Sheets spreadsheet and appends the resulting
+dataframes from each sheet together to create a single dataframe. This
+function is a powerful tool for data analysis, as it allows you to
+easily combine data from multiple sheets into a single dataset.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co"># Google Sheet ID or the link to the sheet</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>sheet_id <span class="ot">&lt;-</span> <span class="st">&quot;1izO0mHu3L9AMySQUXGDn9GPs1n-VwGFSEoAKGhqVQh0&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># read all the sheets</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">read_gsheets</span>(<span class="at">ss =</span> sheet_id)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 260 × 9</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt;   carat color clarity depth table price     x     y     z</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 1  2    I     SI1      65.9    60 13764  7.8   7.73  5.12</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 2  0.7  H     SI1      65.2    58  2048  5.49  5.55  3.6 </span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; 3  1.51 E     SI1      58.4    70 11102  7.55  7.39  4.36</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; 4  0.7  D     SI2      65.5    57  1806  5.56  5.43  3.6 </span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; 5  0.35 F     VVS1     54.6    59  1011  4.85  4.79  2.63</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 255 more rows</span></span></code></pre></div>
+</div>
+<div id="read_spss_data" class="section level2">
+<h2>read_spss_data()</h2>
+<p><code>read_spss_data()</code> is designed to seamlessly import data
+from an SPSS data (<code>.sav</code> or <code>.zsav</code>) files. It
+converts labelled variables into factors, a crucial step that enhances
+the ease of data manipulation and analysis within the R programming
+environment.</p>
+<p><strong>Read an SPSS data file without converting variable labels as
+column names</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>file_path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;Wages.sav&quot;</span>, <span class="at">package =</span> <span class="st">&quot;bulkreadr&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_spss_data</span>(<span class="at">file =</span> file_path)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>data</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 400 × 9</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;      id  educ south                  sex   exper  wage occup marr        ed     </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;                  &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;       &lt;fct&gt;  </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 1     3    12 does not live in South Male     17  7.5  Other Married     High s…</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 2     4    13 does not live in South Male      9 13.1  Other Not married Some c…</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 3     5    10 lives in South         Male     27  4.45 Other Not married Less t…</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 4    12     9 lives in South         Male     30  6.25 Other Not married Less t…</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 5    13     9 lives in South         Male     29 20.0  Other Married     Less t…</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 395 more rows</span></span></code></pre></div>
+<p><strong>Read an SPSS data file and convert variable labels as column
+names</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_spss_data</span>(<span class="at">file =</span> file_path, <span class="at">label =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>data</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 400 × 9</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;   `Worker ID` `Number of years of education` `Live in south`        Gender</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;                          &lt;dbl&gt; &lt;fct&gt;                  &lt;fct&gt; </span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; 1           3                             12 does not live in South Male  </span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; 2           4                             13 does not live in South Male  </span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; 3           5                             10 lives in South         Male  </span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; 4          12                              9 lives in South         Male  </span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; 5          13                              9 lives in South         Male  </span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; # ℹ 395 more rows</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; # ℹ 5 more variables: `Number of years of work experience` &lt;dbl&gt;,</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; #   `Wage (dollars per hour)` &lt;dbl&gt;, Occupation &lt;fct&gt;, `Marital status` &lt;fct&gt;,</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; #   `Highest education level` &lt;fct&gt;</span></span></code></pre></div>
+</div>
+<div id="pull_out" class="section level2">
+<h2>pull_out()</h2>
+<p><code>pull_out()</code> is similar to [. It acts on vectors,
+matrices, arrays and lists to extract or replace parts. It is pleasant
+to use with the magrittr (<code>⁠%&gt;%</code>⁠) and
+base(<code>|&gt;</code>) operators.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>top_10_richest_nig <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Aliko Dangote&quot;</span>, <span class="st">&quot;Mike Adenuga&quot;</span>, <span class="st">&quot;Femi Otedola&quot;</span>, <span class="st">&quot;Arthur Eze&quot;</span>, <span class="st">&quot;Abdulsamad Rabiu&quot;</span>, <span class="st">&quot;Cletus Ibeto&quot;</span>, <span class="st">&quot;Orji Uzor Kalu&quot;</span>, <span class="st">&quot;ABC Orjiakor&quot;</span>, <span class="st">&quot;Jimoh Ibrahim&quot;</span>, <span class="st">&quot;Tony Elumelu&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>top_10_richest_nig <span class="sc">%&gt;%</span> </span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">pull_out</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">2</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Aliko Dangote&quot;    &quot;Abdulsamad Rabiu&quot; &quot;Mike Adenuga&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>top_10_richest_nig <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">pull_out</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">2</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Femi Otedola&quot;   &quot;Arthur Eze&quot;     &quot;Cletus Ibeto&quot;   &quot;Orji Uzor Kalu&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; [5] &quot;ABC Orjiakor&quot;   &quot;Jimoh Ibrahim&quot;  &quot;Tony Elumelu&quot;</span></span></code></pre></div>
+</div>
+<div id="convert_to_date" class="section level2">
+<h2>convert_to_date()</h2>
+<p><code>convert_to_date()</code> parses an input vector into POSIXct
+date-time object. It is also powerful to convert from excel date number
+like <code>42370</code> into date value like
+<code>2016-01-01</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="do">## ** heterogeneous dates **</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="dv">44869</span>, <span class="st">&quot;22.09.2022&quot;</span>, <span class="cn">NA</span>, <span class="st">&quot;02/27/92&quot;</span>, <span class="st">&quot;01-19-2022&quot;</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="st">&quot;13-01-  2022&quot;</span>, <span class="st">&quot;2023&quot;</span>, <span class="st">&quot;2023-2&quot;</span>, <span class="fl">41750.2</span>, <span class="fl">41751.99</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="st">&quot;11 07 2023&quot;</span>, <span class="st">&quot;2023-4&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  )</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co"># Convert to POSIXct or Date object</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="fu">convert_to_date</span>(dates)</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;2022-11-04&quot; &quot;2022-09-22&quot; NA           &quot;1992-02-27&quot; &quot;2022-01-19&quot;</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;2022-01-13&quot; &quot;2023-01-01&quot; &quot;2023-02-01&quot; &quot;2014-04-21&quot; &quot;2014-04-22&quot;</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; [11] &quot;2023-07-11&quot; &quot;2023-04-01&quot;</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co"># It can also convert date time object to date object </span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="fu">convert_to_date</span>(lubridate<span class="sc">::</span><span class="fu">now</span>())</span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2023-09-15&quot;</span></span></code></pre></div>
+</div>
+<div id="inspect_na" class="section level2">
+<h2>inspect_na()</h2>
+<p><code>inspect_na()</code> summarizes the rate of missingness in each
+column of a data frame. For a grouped data frame, the rate of
+missingness is summarized separately for each group.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co"># dataframe summary</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">inspect_na</span>(airquality)</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt;   col_name   cnt  pcnt</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; 1 Ozone       37 24.2 </span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; 2 Solar.R      7  4.58</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; 3 Wind         0  0   </span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; 4 Temp         0  0   </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; 5 Month        0  0   </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more row</span></span></code></pre></div>
+<p><strong>Grouped dataframe summary</strong></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>airquality <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">group_by</span>(Month) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">inspect_na</span>()</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 25 × 4</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; # Groups:   Month [5]</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt;   Month col_name   cnt  pcnt</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; 1     5 Ozone        5  16.1</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; 2     5 Solar.R      4  12.9</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; 3     5 Wind         0   0  </span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; 4     5 Temp         0   0  </span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; 5     5 Day          0   0  </span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; # ℹ 20 more rows</span></span></code></pre></div>
+</div>
+<div id="fill_missing_values" class="section level2">
+<h2>fill_missing_values()</h2>
+<p><code>fill_missing_values()</code> in an efficient function that
+addresses missing values in a dataframe. It uses imputation by function,
+meaning it replaces missing data in numeric variables with either the
+mean or the median, and in non-numeric variables with the mode. The
+function takes a column-based imputation approach, ensuring that
+replacement values are derived from the respective columns, resulting in
+accurate and consistent data. This method enhances the integrity of the
+dataset and promotes sound decision-making and analysis in data
+processing workflows.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">Sepal_Length =</span> <span class="fu">c</span>(<span class="fl">5.2</span>, <span class="dv">5</span>, <span class="fl">5.7</span>, <span class="cn">NA</span>, <span class="fl">6.2</span>, <span class="fl">6.7</span>, <span class="fl">5.5</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">Sepal.Width =</span> <span class="fu">c</span>(<span class="fl">4.1</span>, <span class="fl">3.6</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="fl">2.9</span>, <span class="fl">2.5</span>, <span class="fl">2.4</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">Petal_Length =</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">1.4</span>, <span class="fl">4.2</span>, <span class="fl">1.4</span>, <span class="cn">NA</span>, <span class="fl">5.8</span>, <span class="fl">3.7</span>),</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="at">Petal_Width =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fl">0.2</span>, <span class="fl">1.2</span>, <span class="fl">0.2</span>, <span class="fl">1.3</span>, <span class="fl">1.8</span>, <span class="cn">NA</span>),</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>  <span class="at">Species =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="cn">NA</span>, <span class="st">&quot;versicolor&quot;</span>, <span class="st">&quot;setosa&quot;</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="cn">NA</span>, <span class="st">&quot;virginica&quot;</span>, <span class="st">&quot;setosa&quot;</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>  )</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>df</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 5</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;   Sepal_Length Sepal.Width Petal_Length Petal_Width Species   </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; 1          5.2         4.1          1.5        NA   setosa    </span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; 2          5           3.6          1.4         0.2 &lt;NA&gt;      </span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; 3          5.7         3            4.2         1.2 versicolor</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; 4         NA           3            1.4         0.2 setosa    </span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; 5          6.2         2.9         NA           1.3 &lt;NA&gt;      </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more rows</span></span></code></pre></div>
+<p><strong>Using mean to fill missing values for numeric
+variables</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>result_df_mean <span class="ot">&lt;-</span> <span class="fu">fill_missing_values</span>(df, <span class="at">use_mean =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>result_df_mean</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 5</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;   Sepal_Length Sepal.Width Petal_Length Petal_Width Species   </span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt; 1         5.2          4.1          1.5        0.94 setosa    </span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt; 2         5            3.6          1.4        0.2  setosa    </span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt; 3         5.7          3            4.2        1.2  versicolor</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt; 4         5.72         3            1.4        0.2  setosa    </span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt; 5         6.2          2.9          3          1.3  setosa    </span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more rows</span></span></code></pre></div>
+<p><strong>Using median to fill missing values for numeric
+variables</strong></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>result_df_median <span class="ot">&lt;-</span> <span class="fu">fill_missing_values</span>(df, <span class="at">use_mean =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>result_df_median</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 5</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt;   Sepal_Length Sepal.Width Petal_Length Petal_Width Species   </span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; 1          5.2         4.1          1.5         1.2 setosa    </span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt; 2          5           3.6          1.4         0.2 setosa    </span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt; 3          5.7         3            4.2         1.2 versicolor</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt; 4          5.6         3            1.4         0.2 setosa    </span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt; 5          6.2         2.9          2.6         1.3 setosa    </span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more rows</span></span></code></pre></div>
+<div id="impute-missing-values-nas-in-a-grouped-data-frame" class="section level3">
+<h3>Impute missing values (NAs) in a grouped data frame</h3>
+<p>You can use the <code>fill_missing_values()</code> in a grouped data
+frame by using other grouping and map functions. Here is an example of
+how to do this:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>sample_iris <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="at">Sepal_Length =</span> <span class="fu">c</span>(<span class="fl">5.2</span>, <span class="dv">5</span>, <span class="fl">5.7</span>, <span class="cn">NA</span>, <span class="fl">6.2</span>, <span class="fl">6.7</span>, <span class="fl">5.5</span>),</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="at">Petal_Length =</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">1.4</span>, <span class="fl">4.2</span>, <span class="fl">1.4</span>, <span class="cn">NA</span>, <span class="fl">5.8</span>, <span class="fl">3.7</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="at">Petal_Width =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">1.2</span>, <span class="fl">0.2</span>, <span class="fl">1.3</span>, <span class="fl">1.8</span>, <span class="cn">NA</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="at">Species =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;versicolor&quot;</span>, <span class="st">&quot;setosa&quot;</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>          <span class="st">&quot;virginica&quot;</span>, <span class="st">&quot;virginica&quot;</span>, <span class="st">&quot;setosa&quot;</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>sample_iris</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 4</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt;   Sepal_Length Petal_Length Petal_Width Species   </span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt; 1          5.2          1.5         0.3 setosa    </span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#&gt; 2          5            1.4         0.2 setosa    </span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#&gt; 3          5.7          4.2         1.2 versicolor</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co">#&gt; 4         NA            1.4         0.2 setosa    </span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#&gt; 5          6.2         NA           1.3 virginica </span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>sample_iris <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>  <span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  <span class="fu">group_split</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="fu">map_df</span>(fill_missing_values)</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 4</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="co">#&gt;   Sepal_Length Petal_Length Petal_Width Species   </span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co">#&gt;          &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="co">#&gt; 1         5.2           1.5       0.3   setosa    </span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co">#&gt; 2         5             1.4       0.2   setosa    </span></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="co">#&gt; 3         5.23          1.4       0.2   setosa    </span></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="co">#&gt; 4         5.5           3.7       0.233 setosa    </span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="co">#&gt; 5         5.7           4.2       1.2   versicolor</span></span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="co">#&gt; # ℹ 2 more rows</span></span></code></pre></div>
+</div>
+</div>
+<div id="inspiration" class="section level2">
+<h2>Inspiration</h2>
+<p>bulkreadr draws on and complements / emulates other packages such as
+<code>readxl</code>, <code>readr</code>, and <code>googlesheets4</code>
+to read bulk data in R.</p>
+<ul>
+<li><p><a href="https://readxl.tidyverse.org">readxl</a> is the
+tidyverse package for reading Excel files (xls or xlsx) into an R data
+frame.</p></li>
+<li><p><a href="https://readr.tidyverse.org">readr</a> is the tidyverse
+package for reading delimited files (e.g., csv or tsv) into an R data
+frame.</p></li>
+<li><p><a href="https://cran.r-project.org/package=googlesheets">googlesheets4</a>
+is the package to interact with Google Sheets through the Sheets API v4
+<a href="https://developers.google.com/sheets/api" class="uri">https://developers.google.com/sheets/api</a>.</p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

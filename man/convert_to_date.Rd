@@ -2,7 +2,7 @@
 % Please edit documentation in R/convert_to_date.R
 \name{convert_to_date}
 \alias{convert_to_date}
-\title{User friendly date-time parsing function}
+\title{User friendly date parsing function}
 \usage{
 convert_to_date(date_num_char, tz = "UTC")
 }
@@ -16,7 +16,7 @@ returned. Otherwise a POSIXct with time zone attribute set to \code{tz}.}
 a vector of class Date
 }
 \description{
-\code{convert_to_date()} parses an input vector into POSIXct date-time object. It is also powerful to convert from excel date number like \code{42370} into date value like \code{2016-01-01}.
+\code{convert_to_date()} parses an input vector into POSIXct date object. It is also powerful to convert from excel date number like \code{42370} into date value like \code{2016-01-01}.
 }
 \examples{
 
