@@ -25,7 +25,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 ## ----pkgload------------------------------------------------------------------
 library(bulkreadr)
-
+library(dplyr)
 
 ## ----example1-----------------------------------------------------------------
 
@@ -72,7 +72,7 @@ sheet_id <- "1izO0mHu3L9AMySQUXGDn9GPs1n-VwGFSEoAKGhqVQh0"
 
 read_gsheets(ss = sheet_id)
 
-## ---- spssdata1---------------------------------------------------------------
+## ----spssdata1----------------------------------------------------------------
 
 file_path <- system.file("extdata", "Wages.sav", package = "bulkreadr")
 
@@ -84,6 +84,22 @@ data
 ## ----spssdata2----------------------------------------------------------------
 
 data <- read_spss_data(file = file_path, label = TRUE)
+
+data
+
+
+## ----statadata1---------------------------------------------------------------
+
+file_path <- system.file("extdata", "Wages.dta", package = "bulkreadr")
+
+data <- read_stata_data(file = file_path)
+
+data
+
+
+## ----statadata2---------------------------------------------------------------
+
+data <- read_stata_data(file = file_path, label = TRUE)
 
 data
 
@@ -131,7 +147,7 @@ airquality %>%
 
 ## ----example 6----------------------------------------------------------------
 
-df <- tibble(
+df <- tibble::tibble(
   Sepal_Length = c(5.2, 5, 5.7, NA, 6.2, 6.7, 5.5),
   Sepal.Width = c(4.1, 3.6, 3, 3, 2.9, 2.5, 2.4),
   Petal_Length = c(1.5, 1.4, 4.2, 1.4, NA, 5.8, 3.7),
@@ -158,7 +174,7 @@ result_df_median <- fill_missing_values(df, use_mean = FALSE)
 result_df_median
 
 ## -----------------------------------------------------------------------------
-sample_iris <- tibble(
+sample_iris <- tibble::tibble(
 Sepal_Length = c(5.2, 5, 5.7, NA, 6.2, 6.7, 5.5),
 Petal_Length = c(1.5, 1.4, 4.2, 1.4, NA, 5.8, 3.7),
 Petal_Width = c(0.3, 0.2, 1.2, 0.2, 1.3, 1.8, NA),
