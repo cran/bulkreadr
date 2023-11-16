@@ -59,7 +59,7 @@ directory <- system.file("csvfolder",  package = "bulkreadr")
 read_csv_files_from_dir(dir_path = directory)
 
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 googlesheets4::gs4_deauth()
 
 ## ----example3, message=FALSE, warning=FALSE-----------------------------------
@@ -103,6 +103,24 @@ data <- read_stata_data(file = file_path, label = TRUE)
 
 data
 
+
+## -----------------------------------------------------------------------------
+
+# Creating a data dictionary from an SPSS file
+
+file_path <- system.file("extdata", "Wages.sav", package = "bulkreadr")
+
+wage_data <- read_spss_data(file = file_path)
+
+generate_dictionary(wage_data)
+
+## -----------------------------------------------------------------------------
+
+# Look for a single keyword.
+
+look_for(wage_data, "south")
+
+look_for(wage_data, "e")
 
 ## ----example4-----------------------------------------------------------------
 
