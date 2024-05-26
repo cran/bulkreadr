@@ -2,21 +2,40 @@
 % Please edit documentation in R/fill_missing_values.R
 \name{fill_missing_values}
 \alias{fill_missing_values}
-\title{Fill missing values in a dataframe}
+\title{Fill missing values in a data frame}
 \usage{
-fill_missing_values(df, use_mean = TRUE)
+fill_missing_values(
+  df,
+  selected_variables = NULL,
+  method = c("mean", "min", "max", "median", "harmonic", "geometric")
+)
 }
 \arguments{
-\item{df}{The input dataframe to be processed.}
+\item{df}{A dataframe to process for missing value imputation.}
 
-\item{use_mean}{Logical. If \code{TRUE}, missing values in numeric columns will be replaced with the mean.
-If \code{FALSE}, missing values in numeric columns will be replaced with the median.}
+\item{selected_variables}{An optional character vector of variable names within \code{df}
+for which missing values should be imputed. If \code{NULL} (default), imputation
+is applied to all variables in the data frame.}
+
+\item{method}{A character string specifying the imputation method for
+continuous variables. Supported methods are \code{"min"}, \code{"max"}, \code{"mean"},
+\code{"median"}, \code{"harmonic"}, and \code{"geometric"}. The default method is \code{"mean"}.
+For categorical variables, the \code{mode} is always used.}
 }
 \value{
-A dataframe with missing values filled.
+A data frame with missing values imputed according to the specified
+\code{method}.
 }
 \description{
-\code{fill_missing_values()} is an efficient function that addresses missing values in a dataframe. It uses imputation by function, also known as column-based imputation, to fill numeric variables with the mean or median, and non-numeric variables with the mode. This approach ensures accurate and consistent replacements derived from individual columns, resulting in a complete and reliable dataset for improved analysis and decision-making.
+\code{fill_missing_values()} is an efficient function that addresses missing
+values in a data frame. It uses imputation by function, also known as
+column-based imputation, to impute the missing values. For continuous
+variables, it supports various methods of imputation, including minimum,
+maximum, mean, median, harmonic mean, and geometric mean. For categorical
+variables, missing values are replaced with the mode of the column. This
+approach ensures accurate and consistent replacements derived from individual
+columns, resulting in a complete and reliable dataset for improved analysis
+and decision-making.
 }
 \examples{
 
@@ -32,19 +51,31 @@ Species = c("setosa", NA, "versicolor", "setosa",
            NA, "virginica", "setosa")
 )
 
-# Using mean to fill missing values for numeric variables
+# If you do not specify `selected_variables` (i.e., leave it as `NULL`),
+# the function will impute missing values for all columns in the dataframe.
 
-result_df_mean <- fill_missing_values(df, use_mean = TRUE)
+result_df_mean <- fill_missing_values(df, method = "mean")
 
 result_df_mean
 
-# Using median to fill missing values for numeric variables
+# If you specify column names, only those columns will be imputed. For
+# example, impute for variables `Petal_Length` and `Petal_Width` using
+# the geometric mean.
 
-result_df_median <- fill_missing_values(df, use_mean = FALSE)
+result_df_geomean <- fill_missing_values(df, selected_variables = c
+("Petal_Length", "Petal_Width"), method = "geometric")
 
-result_df_median
+result_df_geomean
+
+# If you specify column positions, only the columns at those positions will #' # be imputed.
+
+result_df_max <- fill_missing_values(df, selected_variables = c
+(2, 3), method = "max")
+
+result_df_max
 
 # Impute missing values (NAs) in a grouped data frame
+
 # You can do that by using the following:
 
 sample_iris <- tibble::tibble(
@@ -58,7 +89,7 @@ Species = c("setosa", "setosa", "versicolor", "setosa",
 sample_iris \%>\%
 group_by(Species) \%>\%
 group_split() \%>\%
-map_df(fill_missing_values)
+map_df(fill_missing_values, method = "median")
 
 
 }
