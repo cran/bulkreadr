@@ -72,8 +72,17 @@ df <- tibble::tibble(
 df
 
 ## -----------------------------------------------------------------------------
-# Impute using the mean
 
+#' df <- tibble::tibble(
+#' Sepal_Length = c(5.2, 5, 5.7, NA, 6.2, 6.7, 5.5),
+#' Petal_Length = c(1.5, 1.4, 4.2, 1.4, NA, 5.8, 3.7),
+#' Petal_Width = c(NA, 0.2, 1.2, 0.2, 1.3, 1.8, NA),
+#' Species = c("setosa", NA, "versicolor", "setosa",
+#'            NA, "virginica", "setosa")
+#' )
+
+
+## -----------------------------------------------------------------------------
 result_df_mean <- fill_missing_values(df, method = "mean")
 
 result_df_mean
@@ -82,14 +91,6 @@ result_df_mean
 
 result_df_geomean <- fill_missing_values(df, selected_variables = c
 ("Petal_Length", "Petal_Width"), method = "geometric")
-
-result_df_geomean
-
-## -----------------------------------------------------------------------------
-# Impute using the maximum method
-
-result_df_max <- fill_missing_values(df, selected_variables = c
-(2, 3), method = "max")
 
 result_df_geomean
 
