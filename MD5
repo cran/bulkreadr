@@ -1,7 +1,7 @@
-f0555c50cdedb50efff0a34e3ad2c5c4 *DESCRIPTION
+5323b3ad7f073db6a82b05e3a61a78ec *DESCRIPTION
 a8d036aafc33d6d2830d51e88a46dc84 *LICENSE
 433ced5540f7325af8f829264777bbc3 *NAMESPACE
-978ccc720d07481fdaccc3776c995830 *NEWS.md
+026ba05011c1295dd33527bc64106923 *NEWS.md
 6a310bdce682fd41ddbbc776dd5e9f3f *R/aliases.R
 cc08f863569f324dd7969b7d92b4bb28 *R/bulkreadr-package.R
 2788a160fcfdb90ae73a1a994d9414bb *R/convert_to_date.R
@@ -18,7 +18,7 @@ b76ca74bfef8a1ecb91181c5835ee343 *R/inspect_na.R
 93b18db15a08a63756837abe6627173c *R/read_stata_data.R
 cf794928715019cf81bd51d467156178 *R/utils-pipe.R
 21af6349de4fe7b46304671e2f15c006 *R/utils.R
-88470c41c5f67cb540338a42c461c2b2 *R/write_excel_sheets_to_csv.R
+cc3aaeba31fb313fb1704d073f2fa8e5 *R/write_excel_sheets_to_csv.R
 adf39c3ff7799d6c5d82f0bea324790c *README.md
 9d9da0fafac91f634f56ddd4345785f7 *build/vignette.rds
 743325238df16e9b15483223ae2fc47b *inst/WORDLIST
@@ -29,13 +29,13 @@ adf39c3ff7799d6c5d82f0bea324790c *README.md
 43fd8995ca7c74e430ae1883c798fafd *inst/csvfolder/VeryGood.csv
 518afde4dad571da6377fa86dc0b4495 *inst/doc/intro-to-bulkreadr.R
 30a84da849109fca0c419076ecd9c07c *inst/doc/intro-to-bulkreadr.Rmd
-7fd7c210b312bf0cf0d62586009b42e8 *inst/doc/intro-to-bulkreadr.html
+a4ed5bc338415f7015f6b75b5c395dea *inst/doc/intro-to-bulkreadr.html
 aa0b0875eb2bfed6784153924942565a *inst/doc/labelled-data.R
 5bc3324eba40352690cc50dbdeb5d689 *inst/doc/labelled-data.Rmd
 0069b1fcd2910112ceab2174a2f7dfd4 *inst/doc/labelled-data.html
 4bc6a75cbae6fc5bfbcce1bad0412726 *inst/doc/other-functions.R
 ba81399c4818db4ff95a408a5fa65502 *inst/doc/other-functions.Rmd
-bd99eda8f203ea7b1ac013daffd76335 *inst/doc/other-functions.html
+10c3c2c57dfb3c8af167840e6ddf4bbf *inst/doc/other-functions.html
 a78fa595e710ad73232c32862501f723 *inst/extdata/Diamonds.xlsx
 badb7f121117e93729ed9a440e44ee28 *inst/extdata/GDiamonds.xlsx
 df12617263efeff2d59a7e111547711a *inst/extdata/OGD.xlsx
@@ -62,7 +62,7 @@ c53eb849579d24fee075ec19b785bd83 *man/read_excel_workbook.Rd
 c5d10f1253dd011aa6f64f7a9d10a0b0 *man/read_gsheets.Rd
 b38f9815c6992da1efe10989f073860f *man/read_spss_data.Rd
 ef7bb760bd3fd48f237de2f1b9bacf2e *man/read_stata_data.Rd
-fb3047d0782ec897436408f5d62449b6 *man/write_excel_sheets_to_csv.Rd
+b83aecf4401a170f9572d5fe96ce67dc *man/write_excel_sheets_to_csv.Rd
 9415d13cc7e81ae5c11cb2b1b85387b6 *tests/testthat.R
 9eafee0790455c005dc65d53d73b8c67 *tests/testthat/csvfolder/Fair.csv
 8cb169e34acfd6cee141741fc6af4088 *tests/testthat/csvfolder/Good.csv

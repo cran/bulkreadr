@@ -1,3 +1,9 @@
+# bulkreadr 1.2.1 (2025-07-28)
+
+* **write_excel_sheets_to_csv()** 
+
+  - Introduced a new `na` parameter (defaulting to `""`) so that any `NA` values in your data frames are written out as blank cells in the CSV files instead of the literal string `"NA"`.  
+
 # bulkreadr 1.2.0 (2025-04-23)
 
 We are pleased to announce the release of `bulkreadr` version 1.1.2. This version introduces a powerful new utility to streamline multi-sheet Excel workflows:
